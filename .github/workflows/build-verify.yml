@@ -11,7 +11,7 @@ jobs:
       - name: Package container image for microcks-keycloak
         if: github.repository_owner == 'microcks'
         run: |
-          docker build -f build/Dockerfile -t quay.io/microcks/microcks-keycloak:nightly .
+          docker build -f Dockerfile -t quay.io/microcks/microcks-keycloak:nightly .
 
       - name: Login and push to Quay.io Registry
         if: github.repository_owner == 'microcks'
