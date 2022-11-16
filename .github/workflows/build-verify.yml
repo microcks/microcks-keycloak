@@ -8,13 +8,26 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Package container image for microcks-keycloak
-        if: github.repository_owner == 'microcks'
+      - name: Set environment for branch
         run: |
-          docker build -f Dockerfile -t quay.io/microcks/microcks-keycloak:nightly .
+          set -x
+          if [[ $GITHUB_REF == 'refs/heads/master' ]]; then
+            echo "IMAGE_TAG=latest" >> "$GITHUB_ENV"
+            echo "PACKAGE_IMAGE=true" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == "refs/tags/$GITHUB_REF_NAME" ]]; then
+            echo "IMAGE_TAG=$GITHUB_REF_NAME" >> "$GITHUB_ENV"
+            echo "PACKAGE_IMAGE=true" >> "$GITHUB_ENV"
+          else
+            echo "PACKAGE_IMAGE=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: Package container image for microcks-keycloak
+        if: github.repository_owner == 'microcks' && env.PACKAGE_IMAGE == 'true'
+        run: |
+          docker build -f Dockerfile -t quay.io/microcks/microcks-keycloak:$IMAGE_TAG .
 
       - name: Login and push to Quay.io Registry
-        if: github.repository_owner == 'microcks'
+        if: github.repository_owner == 'microcks' && env.PACKAGE_IMAGE == 'true'
         run: |
           echo ${{ secrets.QUAY_PASSWORD }} | docker login -u ${{ secrets.QUAY_USERNAME }} --password-stdin quay.io
-          docker push quay.io/microcks/microcks-keycloak:nightly
+          docker push quay.io/microcks/microcks-keycloak:$IMAGE_TAG
