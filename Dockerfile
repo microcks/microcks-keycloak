@@ -1,4 +1,4 @@
-FROM quay.io/keycloak/keycloak:20.0.1
+FROM quay.io/keycloak/keycloak:20.0.2
 
 # Some version information
 LABEL io.k8s.description="Microcks is Open Source Kubernetes native tool for API Mocking and Testing" \
