@@ -43,6 +43,7 @@ jobs:
           docker buildx build --push \
             --platform=linux/amd64,linux/arm64 \
             --builder=buildx-multi-arch \
+            --provenance=false \
             --build-arg TAG=$IMAGE_TAG \
             --file Dockerfile \
             --tag=quay.io/microcks/microcks-keycloak:$IMAGE_TAG .
